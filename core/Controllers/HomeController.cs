@@ -1,18 +1,26 @@
 using System;
+using Core.Mappers;
+using Core.Models.Database;
+using Core.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 public class HomeController : Controller
 {
+    private readonly UserRepository _userRepository;
+    
+    public HomeController (DatabaseContext databaseContext) 
+    {
+        
+        _userRepository = new UserRepository(databaseContext);
+    }
+
     [HttpGet("/")]
     public ActionResult Index()
     {
-        ViewBag.Message = "Hello";
-        ViewBag.Time = DateTime.Now;
+        string email = "test@user.com";
+        UserDatabaseModel user = _userRepository.GetByEmail(email);
 
-        string name = "sian";
-
-        ViewBag.name = name;
-
-        return View();
+        var viewModel = UserViewModelMapper.MapFrom(user);
+        return View(viewModel);
     }
 }
